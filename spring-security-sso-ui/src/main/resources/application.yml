@@ -13,7 +13,7 @@ security:
     resource:
       userInfoUri: http://localhost:8081/auth/user/me
       jwt:
-        key-uri: http://127.0.0.1:8081/auth/oauth/token_key
+        key-uri: http://localhost:8081/auth/oauth/token_key
 
 logging:
   level:

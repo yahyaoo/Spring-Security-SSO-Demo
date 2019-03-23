@@ -17,7 +17,6 @@
 package org.baeldung.config;
 
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,11 +34,10 @@ import java.security.Principal;
 @RestController
 public class DemoController {
 
-
     @GetMapping("/info")
     @Secured(value = "ROLE_USER")
     public Principal demo(Principal principal) {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-        return oAuth2Authentication.getUserAuthentication();
+        return oAuth2Authentication;
     }
 }

@@ -49,12 +49,13 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
                 .requestMatcher(new MvcRequestMatcher(this.handlerMappingIntrospector, "/**"))
-
 //                .requestMatchers()
 //                .antMatchers("/user/me")
 //                .and()
 
                 .authorizeRequests()
+                .antMatchers("/oauth/token_key")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
         ;

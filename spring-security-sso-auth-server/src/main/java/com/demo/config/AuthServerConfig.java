@@ -29,6 +29,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
+import javax.sql.DataSource;
+
 /**
  * Title: AuthServerConfig
  * Description: TODO(这里用一句话描述这个类的作用)
@@ -45,15 +47,17 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     private final JwtAccessTokenConverter jwtAccessTokenConverter;
     private final PasswordEncoder passwordEncoder;
     private final TokenStore tokenStore;
+    private final DataSource dataSource;
 
     @Autowired
     public AuthServerConfig(PasswordEncoder passwordEncoder,
                             JwtAccessTokenConverter jwtAccessTokenConverter,
-                            TokenStore tokenStore, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+                            TokenStore tokenStore, AuthenticationConfiguration authenticationConfiguration, DataSource dataSource) throws Exception {
         this.passwordEncoder = passwordEncoder;
         this.jwtAccessTokenConverter = jwtAccessTokenConverter;
         this.tokenStore = tokenStore;
         this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -64,15 +68,20 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("SampleClientId")
-                .secret(passwordEncoder.encode("secret"))
-                .authorizedGrantTypes("authorization_code")
-                .scopes("user_info")
-                .autoApprove(true)
-                .redirectUris("http://localhost:8082/ui/login", "http://localhost:8083/ui2/login", "http://localhost:8082/login")
-        // .accessTokenValiditySeconds(3600)
-        ; // 1 hour
+        clients
+                .jdbc(dataSource)
+                .passwordEncoder(passwordEncoder);
+
+//        clients.inMemory()
+//                .withClient("SampleClientId")
+//                .secret(passwordEncoder.encode("secret"))
+//                .authorizedGrantTypes("authorization_code")
+//                .scopes("user_info")
+//                .autoApprove(true)
+//                .redirectUris("http://localhost:8082/ui/login", "http://localhost:8083/ui2/login", "http://localhost:8082/login")
+//        // .accessTokenValiditySeconds(3600)
+//        ; // 1 hour
+
     }
 
     @Override
