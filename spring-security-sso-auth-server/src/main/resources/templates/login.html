@@ -14,16 +14,22 @@
 <div class="container">
     <form class="form-signin" th:action="@{/login}" method="post">
         <h2 class="form-signin-heading">Please sign in</h2>
-        <p>Example: user / domain / password</p>
+        <p>Example: Yahyaoo/ 123456 Or Yahyaoo/123456@qq.com/123456</p>
         <p th:if="${param.error}" class="error">Invalid user, password, or domain</p>
         <p>
-            <label for="username" class="sr-only">Username</label>
-            <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus/>
+            <label for="integration" class="sr-only">UsernameOrMail</label>
+            <input type="text" id="integration" name="integration" class="form-control" placeholder="integration" autofocus/>
+        </p>
+        <p>Or</p>
+        <p>
+            <label for="username" class="sr-only">username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="username" autofocus/>
         </p>
         <p>
-            <label for="domain" class="sr-only">Domain</label>
-            <input type="text" id="domain" name="domain" class="form-control" placeholder="Domain" required autofocus/>
+            <label for="mail" class="sr-only">mail</label>
+            <input type="text" id="mail" name="mail" class="form-control" placeholder="mail" autofocus/>
         </p>
+        <p>Must</p>
         <p>
             <label for="password" class="sr-only">Password</label>
             <input type="password" id="password" name="password" class="form-control" placeholder="Password" required autofocus/>
