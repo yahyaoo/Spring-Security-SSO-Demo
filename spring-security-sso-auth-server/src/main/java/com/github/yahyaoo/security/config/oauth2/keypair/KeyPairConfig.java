@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.github.yahyaoo.config;
+package com.github.yahyaoo.security.config.oauth2.keypair;
 
 import lombok.Data;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,7 +41,7 @@ import java.security.KeyPair;
 @Component
 @Configuration
 @ConfigurationProperties(prefix = "keypair")
-public class KeyPairConfiguration {
+public class KeyPairConfig {
 
     private String fileName;
     private String password;

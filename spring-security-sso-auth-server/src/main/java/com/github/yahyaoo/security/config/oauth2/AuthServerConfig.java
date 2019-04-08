@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.github.yahyaoo.config;
+package com.github.yahyaoo.security.config.oauth2;
 
 import com.github.module.config.EnableCustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;

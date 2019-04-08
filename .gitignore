@@ -228,3 +228,4 @@ spring-security-sso-auth-server/target/maven-archiver/pom.properties
 spring-security-sso-auth-server/target/classes/schema.sql
 spring-security-sso-auth-server/target/classes/META-INF/spring-configuration-metadata.json
 spring-security-sso-auth-server/target/classes/mapper/DemoUserMapper.xml
+/.metadata/

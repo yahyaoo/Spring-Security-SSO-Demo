@@ -38,12 +38,25 @@ public class UiSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/**")
+        http
+                .antMatcher("/**")
+
                 .authorizeRequests()
-                .antMatchers("/", "/login/**")
+                .antMatchers("/")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
+
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+
+        ;
     }
 
 }

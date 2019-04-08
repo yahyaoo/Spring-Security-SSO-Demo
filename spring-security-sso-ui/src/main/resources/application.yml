@@ -15,10 +15,21 @@ security:
       jwt:
         key-uri: http://localhost:8081/auth/oauth/token_key
 
+spring:
+  #redis
+  redis:
+    host: 192.168.188.130
+    port: 6379
+
+  #Session
+  session:
+    store-type: redis
+
 logging:
   level:
-    org.springframework.security: error
-
-spring:
-  thymeleaf:
-    cache: false        
+    com:
+      github:
+        yahyaoo: debug
+    org:
+      springframework:
+        security: debug

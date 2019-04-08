@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Spring Security SSO</title>
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <title>Spring Security SSO</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"
+          rel="stylesheet"/>
 </head>
 
 <body>
 <div class="container">
-	<div class="col-sm-12">
-		<h1>Secured Page</h1>
-		Welcome, <span th:text="${#authentication.name}">Name</span>
-	</div>
+    <div class="logout float-right" sec:authorize="isAuthenticated()" th:fragment="logout">
+        <p>Logged in: <span sec:authentication="name"></span> |<span sec:authentication="principal">Some Domain</span>
+        </p>
+        <div>
+            <form action="#" method="post" th:action="@{/logout}">
+                <button class="btn btn-sm btn-primary btn-block" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <h1>Secured Page</h1>
+        Welcome, <span th:text="${#authentication.name}">Name</span>
+    </div>
 </div>
 </body>
 </html>

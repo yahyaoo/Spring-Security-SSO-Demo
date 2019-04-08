@@ -16,6 +16,7 @@
 
 package com.github.yahyaoo.controller;
 
+import com.github.module.security.token.DemoOauth2AccessAuthenticationToken;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +35,8 @@ public class DemoController {
     @Secured(value = "ROLE_USER")
     public Principal demo(Principal principal) {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-        oAuth2Authentication.getName();
+        DemoOauth2AccessAuthenticationToken authentication = (DemoOauth2AccessAuthenticationToken) oAuth2Authentication.getUserAuthentication();
+        System.out.println(authentication.getUserDetails().toString());
         return principal;
     }
 

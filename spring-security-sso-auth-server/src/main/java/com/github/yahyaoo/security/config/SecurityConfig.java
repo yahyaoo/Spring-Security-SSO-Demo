@@ -14,15 +14,18 @@
  *  limitations under the License.
  */
 
-package com.github.yahyaoo.config;
+package com.github.yahyaoo.security.config;
 
 import com.github.yahyaoo.security.authentication.DemoUserDetailsAuthenticationProvider;
+import com.github.yahyaoo.security.config.rememberme.RemembermeConfig;
 import com.github.yahyaoo.security.filter.DemoAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.yahyaoo.security.rememberme.RedisRememberMeServices;
+import com.github.yahyaoo.security.rememberme.RedisTokenRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,8 +34,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 /**
@@ -47,17 +53,32 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
+    // ~ Instance fields
+    // =======================================================================================
 
-    @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    private final UserDetailsService userDetailsService;
+    private final RedisTokenRepository tokenRepository;
+    private final RemembermeConfig remembermeConfig;
+
+    // ~ Constructors
+    // ===================================================================================================
+
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          RedisTokenRepository tokenRepository,
+                          RemembermeConfig remembermeConfig) {
         this.userDetailsService = userDetailsService;
+        this.tokenRepository = tokenRepository;
+        this.remembermeConfig = remembermeConfig;
     }
+
+    // ~ Methods
+    // =========================================================================================================
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rememberMeAuthenticationFilter(), RememberMeAuthenticationFilter.class)
 
                 .requestMatcher(AnyRequestMatcher.INSTANCE)
 
@@ -79,19 +100,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
+                .addLogoutHandler((LogoutHandler) rememberMeServices())
+
+//                .and()
+//                .rememberMe()
+//                .rememberMeServices(RememberMe.getInstance(userDetailsService).getServices())
+//                .key("Yahyaoo")
         ;
+
     }
 
     private DemoAuthenticationFilter authenticationFilter() throws Exception {
         DemoAuthenticationFilter authenticationFilter = new DemoAuthenticationFilter();
         authenticationFilter.setAuthenticationManager(authenticationManagerBean());
         authenticationFilter.setAuthenticationFailureHandler(simpleUrlAuthenticationFailureHandler());
+        authenticationFilter.setRememberMeServices(rememberMeServices());
         return authenticationFilter;
     }
 
+    private RememberMeAuthenticationFilter rememberMeAuthenticationFilter() throws Exception {
+        return new RememberMeAuthenticationFilter(authenticationManagerBean(), rememberMeServices());
+    }
+
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider());
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth
+                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(new RememberMeAuthenticationProvider(remembermeConfig.getKey()));
     }
 
     private AuthenticationProvider authenticationProvider() {
@@ -100,6 +135,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler() {
         return new SimpleUrlAuthenticationFailureHandler("/login?error=true");
+    }
+
+    private RememberMeServices rememberMeServices() {
+        RedisRememberMeServices rememberMeServices = new RedisRememberMeServices(
+                remembermeConfig.getKey(), userDetailsService, tokenRepository);
+        rememberMeServices.setTokenValiditySeconds(remembermeConfig.getExpire());
+        return rememberMeServices;
     }
 
     @Bean

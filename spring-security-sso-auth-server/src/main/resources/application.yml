@@ -46,6 +46,15 @@ spring:
       user: admin
       password: admin
 
+  #redis
+  redis:
+    host: 192.168.188.130
+    port: 6379
+
+  #Session
+  session:
+    store-type: redis
+
 #Mybatis config
 mybatis:
   type-aliases-package: com.github.yahyaoo.entity.po
@@ -58,4 +67,14 @@ keypair:
 
 logging:
   level:
-    root: info
+    com:
+      github:
+        yahyaoo: debug
+    org:
+      springframework:
+        security: debug
+
+application:
+  rememberme:
+    expire: 1209600 #TWO WEEKS
+    key: Yahyaoo

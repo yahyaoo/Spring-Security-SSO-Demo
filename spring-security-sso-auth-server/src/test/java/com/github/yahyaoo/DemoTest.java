@@ -16,21 +16,60 @@
 
 package com.github.yahyaoo;
 
+import com.github.yahyaoo.util.RedisCommandsExt;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.security.KeyPair;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.util.List;
 
 /**
  * @author yahyaoo
  * @date 2019/3/28 15:21
  */
 @RunWith(SpringRunner.class)
+@SpringBootTest
 public class DemoTest {
+
+    private final Log logger = LogFactory.getLog(getClass());
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private RedisCommandsExt redisCommandsExt;
+    @Autowired
+    private KeyPair keyPair;
 
     @Test
     public void demoTest() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         System.out.println(passwordEncoder.encode("secret"));
+    }
+
+    @Test
+    public void demo() {
+        redisTemplate.opsForValue().set("demo", redisTemplate.toString());
+    }
+
+    @Test
+    public void demo2() {
+        List<String> scan = redisCommandsExt.scanGetKeys(Integer.MAX_VALUE, "*:userinfo*");
+        logger.info("start");
+        for (String s : scan) {
+            logger.info(s);
+        }
+    }
+
+    @Test
+    public void demo3() {
+        RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey) keyPair.getPrivate();
+        logger.debug(privateKey);
     }
 }
